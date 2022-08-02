@@ -154,11 +154,12 @@ Character IDs (These may or may not change as new CBT versions are released):
 "AvatarID": 1205, - Blade
 "AvatarID": 1206, - Sushang
 ```
-(Bugged Characters which result in a softlock they might be placeholders or we are possibly missing excels)
-```"AvatarID": 8001, - ???
-"AvatarID": 8002, - ???
-"AvatarID": 8003, - ???
-"AvatarID": 8004, - ???
+(Bugged Characters which result in a softlock they might be placeholders or something else)
+```
+"AvatarID": 8001, - Male MC
+"AvatarID": 8002, - Female MC
+"AvatarID": 8003, - Male MC V2
+"AvatarID": 8004, - Female MC V2
 "AvatarID": 9070, - ???
 "AvatarID": 9075, - ???
 "AvatarID": 9998, - ???
