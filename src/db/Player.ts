@@ -1,14 +1,26 @@
-import { LineupInfo, Vector } from "../data/proto/StarRail";
+import { ExtraLineupType, HeroBasicType, LineupInfo, Vector } from "../data/proto/StarRail";
 import Logger from "../util/Logger";
 import Account from "./Account";
+import Avatar from "./Avatar";
 import Database from "./Database";
 const c = new Logger("Player");
 
+export interface LineupI {
+    avatarList: number[];
+    isVirtual: boolean;
+    planeId: number;
+    mp: number;
+    leaderSlot: number;
+    index: number;
+    extraLineupType: ExtraLineupType;
+    name: string;
+}
 interface PlayerI {
     _id: number;
     name: string;
     token: string;
     banned: boolean;
+    heroBasicType: HeroBasicType;
     basicInfo: {
         nickname: string;
         level: number;
@@ -21,7 +33,9 @@ interface PlayerI {
     }
     lineup: {
         curIndex: number;
-        lineups: LineupInfo[];
+        lineups: {
+            [key: number]: LineupI;
+        };
     }
     posData: {
         floorID: number;
@@ -31,8 +45,9 @@ interface PlayerI {
 }
 
 export default class Player {
+    public readonly uid: number;
     private constructor(public db: PlayerI) {
-
+        this.uid = db._id;
     }
 
     public static async fromUID(uid: number | string): Promise<Player | undefined> {
@@ -51,12 +66,26 @@ export default class Player {
         return new Player(plr);
     }
 
-    public getCurLineup() {
-        return this.db.lineup.lineups[this.db.lineup.curIndex];
+    public async getLineup(lineupIndex?: number): Promise<LineupInfo> {
+        const curIndex = this.db.lineup.curIndex;
+        const lineup = this.db.lineup.lineups[lineupIndex || curIndex];
+        const avatars = await Avatar.fromLineup(this.uid, lineup);
+        let slot = 0;
+        avatars.forEach(avatar => {
+            avatar.lineup.slot = slot++;
+        });
+        return {
+            ...lineup,
+            avatarList: avatars.map(x => x.lineup)
+        }
     }
 
-    public setCurLineup(lineup: LineupInfo, curIndex: number = this.db.lineup.curIndex) {
-        this.db.lineup.lineups[curIndex] = lineup;
+    public setLineup(lineup: LineupInfo, index?: number, curIndex: number = this.db.lineup.curIndex) {
+        this.db.lineup.lineups[index || curIndex] = {
+            ...lineup,
+            avatarList: lineup.avatarList.map(x => x.id)
+        };
+
         this.db.lineup.curIndex = curIndex;
     }
 
@@ -73,6 +102,36 @@ export default class Player {
             _id: acc.uid,
             name: acc.name,
             token: acc.token,
+            heroBasicType: HeroBasicType.BoyWarrior,
+            basicInfo: {
+                exp: 0,
+                level: 1,
+                hcoin: 0,
+                mcoin: 0,
+                nickname: acc.name,
+                scoin: 0,
+                stamina: 100,
+                worldLevel: 1,
+            },
+            lineup: {
+                curIndex: 0,
+                lineups: {
+                    0: {
+                        avatarList: [1001],
+                        extraLineupType: ExtraLineupType.LINEUP_NONE,
+                        index: 0,
+                        isVirtual: false,
+                        leaderSlot: 0,
+                        mp: 100, // ?? Not sure what this is
+                        name: "Default Lineup",
+                        planeId: 10001
+                    }
+                }
+            },
+            posData: {
+                floorID: 10001001,
+                planeID: 10001
+            },
             banned: false
         } as PlayerI
 
@@ -82,6 +141,6 @@ export default class Player {
 
     public async save() {
         const db = Database.getInstance();
-        await db.update("players", { _id: this.db._id  } , this.db);
+        await db.update("players", { _id: this.db._id }, this.db);
     }
 }
