@@ -205,7 +205,7 @@ export default async function handle(session: Session, packet: Packet) {
                 equipRelicList: [],
                 exp: 0,
                 level: 80,
-                promotion: 1,
+                promotion: 5,
                 rank: 6,
                 skilltreeList: [],
             },
