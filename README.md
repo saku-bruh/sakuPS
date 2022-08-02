@@ -1,6 +1,13 @@
 # Running Honkai: Star Rail with CrepeSR
 
-###### PART 0: Prerequisites & Links
+## SECTION 0 - Links
+[Frontrooms Discord](https://discord.gg/wzkuZVTNe8)
+
+[Support Discord](https://discord.gg/sCAC282C)
+
+## SECTION 1 - Setting up everything
+
+###### PART 0: Prerequisites
 
 You need to download the following:
  - Honkai : Star Rail (Get this yourself)
