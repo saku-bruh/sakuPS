@@ -129,6 +129,13 @@ In your crepeSR shell type:
 (If you have any issues with E11000 , open mongoDB, connect to localhost look to the left of the screen and click on "crepesr" then click on avatars. Head to the Indexes tab and delete the _id_1 index.)
 This should fix your issue and allow you to add characters to your account.
 
+## NOTE YOU NEED TO ADD CHARACTERS USING THE CONSOLE BEFORE ADDING THEM TO YOUR PARTY
+
+
+If you do not do this your mongoDB database will become corrupted so just do the 
+
+```/avatar add [characterID]``` for every character ID except the 8xxx and 9xxx IDs
+
 Character IDs (These may or may not change as new CBT versions are released):
 ```
 "AvatarID": 1001, - March 7th
@@ -176,3 +183,13 @@ Here you can find planeIDs & floorIDs which you can use to change the scenes
 Change Maps:
 Go to mongoDB Compass and head to:
 crepesr > players > Click on the arrow on the left of "posData:Object" and change floorID and planeID according to IDs from the MapEntryExcelTable.json file. Be aware that some IDs may or may not crash your game.
+
+Editing your Account Level:
+
+Open mongoDB and head to
+
+```crepesr > players``` (then look for a tab called ```basicinfo``` and click on the arrow to the left of it)
+
+then change 
+
+```level: 1``` to ```level: 60```
