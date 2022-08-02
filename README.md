@@ -110,6 +110,7 @@ to
 ###### PART 3: Starting & Playing the Game
 
  Step 1: Within the CrepeSR command prompt, create an account with the command:
+ 
  ```account create [username] [uid]```
  
  e.g. account create GigaChad 420
