@@ -11,12 +11,12 @@
 
 You need to download the following:
  - Honkai : Star Rail (Get this yourself)
+ - CrepeSR Resources (https://github.com/memetrollsXD/CrepeSR-Resources)
  - Node.js (https://nodejs.org/en/download/current/) and select Windows Installer (.msi)
  - Python (https://www.python.org/downloads/) click on the yellow button , it will download the latest version of Python.
  - Visual Studio (https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Community&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false) you will also need to install the Desktop development with C++  plugin for it.
  - Fiddler Classic (https://telerik-fiddler.s3.amazonaws.com/fiddler/FiddlerSetup.exe)
  - MongoDB Compass (https://www.mongodb.com/try/download/compass)
- - CrepeSR Resources (https://github.com/memetrollsXD/CrepeSR-Resources)
  
 ###### PART 1: Setting up CrepeSR and the Proxy
 
@@ -177,18 +177,22 @@ Character IDs (These may or may not change as new CBT versions are released):
 
 Map IDs:
 MapEntryExcelTable.json
-Which is found in : CrepeSR\src\data\excel
+Which is found in : ```src\data\excel```
 Here you can find planeIDs & floorIDs which you can use to change the scenes
 
 Change Maps:
+Go to ```\rc\server\packets``` and edit ```GetCurSceneInfoCsReq.ts```
+
+OR for crepeSR
+
 Go to mongoDB Compass and head to:
-crepesr > players > Click on the arrow on the left of "posData:Object" and change floorID and planeID according to IDs from the MapEntryExcelTable.json file. Be aware that some IDs may or may not crash your game.
+crepesr > players > Click on the arrow on the left of ```posData:Object``` and change ```floorID``` and ```planeID``` according to IDs from the ```MapEntryExcelTable.json``` file. Be aware that some IDs may or may not crash your game.
 
 Editing your Account Level:
 
 Open mongoDB and head to
 
-```crepesr > players``` (then look for a tab called ```basicinfo``` and click on the arrow to the left of it)
+```crepesr``` > ```players``` (then look for a tab called ```basicinfo``` and click on the arrow to the left of it)
 
 then change 
 
