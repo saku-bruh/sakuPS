@@ -1,5 +1,4 @@
-import { AvatarType, ExtraLineupType, GetCurLineupDataScRsp } from "../../data/proto/StarRail";
-import Avatar from "../../db/Avatar";
+import { AvatarType, ExtraLineupType, GetLineupAvatarDataScRsp } from "../../data/proto/StarRail";
 import Packet from "../kcp/Packet";
 import Session from "../kcp/Session";
 
@@ -30,10 +29,18 @@ export default async function handle(session: Session, packet: Packet) {
         session.player.save();
     }
 
-    session.send(GetCurLineupDataScRsp, {
+    const dataObj: GetLineupAvatarDataScRsp = {
         retcode: 0,
-        lineup: {
-            ...lineup,
-        }
-    } as GetCurLineupDataScRsp);
+        avatarDataList: []
+    }
+
+    for (const avatar of lineup.avatarList) {
+        dataObj.avatarDataList.push({
+            avatarType: avatar.avatarType,
+            hp: avatar.hp,
+            id: avatar.id,
+        });
+    }
+
+    session.send(GetLineupAvatarDataScRsp, dataObj);
 }

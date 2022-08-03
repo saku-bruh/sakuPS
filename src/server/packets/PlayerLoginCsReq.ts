@@ -62,6 +62,8 @@ export default async function handle(session: Session, packet: Packet) {
             lineups: {}
         }
         for (let i = 0; i <= LINEUPS; i++) {
+            let copy = baseLineup;
+            copy.name = `Team ${i}`;
             plr.db.lineup.lineups[i] = baseLineup;
         }
         plr.save();
@@ -80,7 +82,7 @@ export default async function handle(session: Session, packet: Packet) {
         plr.save();
     }
 
-    session.send("PlayerLoginScRsp", {
+    session.send(PlayerLoginScRsp, {
         basicInfo: plr!.db.basicInfo as PlayerBasicInfo,
         isNewPlayer: false,
         stamina: 100,

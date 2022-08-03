@@ -1,6 +1,6 @@
 import Logger from "../util/Logger";
 import Interface, { Command } from "./Interface";
-const c = new Logger("/kick", "blue");
+const c = new Logger("/sync", "blue");
 
 export default async function handle(command: Command) {
     if (!Interface.target) {
@@ -8,7 +8,7 @@ export default async function handle(command: Command) {
         return;
     }
 
-    Interface.target.kick();
+    Interface.target.sync();
 
-    c.log(`Kicked ${Interface.target.account.name}`);
+    c.log(`Synced ${Interface.target.account.name}`);
 }

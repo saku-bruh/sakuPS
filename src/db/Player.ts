@@ -5,6 +5,7 @@ import Account from "./Account";
 import Avatar from "./Avatar";
 import Database from "./Database";
 import { Scene } from "../game/Scene";
+import Inventory from "./Inventory";
 const c = new Logger("Player");
 
 export interface LineupI {
@@ -49,6 +50,7 @@ interface PlayerI {
 export default class Player {
     public readonly uid: number
     public readonly scene: Scene;
+    private inventory!: Inventory;
 
     private constructor(readonly session: Session, public db: PlayerI) {
         this.uid = db._id;
@@ -91,6 +93,7 @@ export default class Player {
         });
         return {
             ...lineup,
+            index: 0,
             avatarList: avatars.map(x => x.lineup)
         }
     }
@@ -102,6 +105,15 @@ export default class Player {
         };
 
         this.db.lineup.curIndex = curIndex;
+    }
+
+    public async getInventory() : Promise<Inventory> {
+        // If this players inventory has not been loaded yet, do so now.
+        if (!this.inventory) {
+            this.inventory = await Inventory.loadOrCreate(this);
+        }
+
+        return this.inventory;
     }
 
     public static async create(session: Session, uid: number | string): Promise<Player | undefined> {
@@ -155,14 +167,14 @@ export default class Player {
             planeId: 10001
         }
         const LINEUPS = 6;
-        let slot = 0;
         dataObj.lineup = {
             curIndex: 0,
             lineups: {}
         }
         for (let i = 0; i <= LINEUPS; i++) {
             const copy = baseLineup;
-            copy.index = slot++;
+            copy.index = 0;
+            copy.name = `Team ${i}`;
             dataObj.lineup.lineups[i] = copy;
         }
 
@@ -175,6 +187,7 @@ export default class Player {
 
     public async save() {
         const db = Database.getInstance();
+        c.debug(JSON.stringify(this.db, null, 2));
         await db.update("players", { _id: this.db._id }, this.db);
     }
 }

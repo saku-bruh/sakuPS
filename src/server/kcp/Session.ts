@@ -8,30 +8,37 @@ import Logger, { VerboseLevel } from '../../util/Logger';
 import defaultHandler from '../packets/PacketHandler';
 import Account from '../../db/Account';
 import Player from '../../db/Player';
-import { PlayerSyncScNotify } from '../../data/proto/StarRail';
+import { BlackLimitLevel, PlayerKickOutScNotify, PlayerKickOutScNotify_KickType, PlayerSyncScNotify } from '../../data/proto/StarRail';
 import Avatar from '../../db/Avatar';
+import SRServer from './SRServer';
+import { HandshakeType } from './Handshake';
+import ProtoFactory, { MessageType } from '../../util/ProtoFactory';
 
 function r(...args: string[]) {
     return fs.readFileSync(resolve(__dirname, ...args));
 }
+type UnWrapMessageType<T> = T extends MessageType<infer U> ? U : T;
 
 export default class Session {
     public key: Buffer = r('./initial.key');
     public c: Logger;
     public account!: Account;
     public player!: Player;
-    public constructor(private readonly kcpobj: KCP.KCP, public readonly ctx: RemoteInfo) {
-        this.kcpobj = kcpobj;
+    public kicked = false;
+
+    public constructor(private kcpobj: KCP.KCP, public readonly ctx: RemoteInfo, public id: string) {
         this.ctx = ctx;
         this.c = new Logger(`${this.ctx.address}:${this.ctx.port}`, 'yellow');
         this.update();
     }
 
     public inputRaw(data: Buffer) {
+        if (this.kicked) return;
         this.kcpobj.input(data);
     }
 
     public async update() {
+        if (this.kicked) return;
         if (!this.kcpobj) {
             console.error("wtf kcpobj is undefined");
             console.debug(this)
@@ -73,26 +80,53 @@ export default class Session {
 
     public async sync() {
         const avatars = await Avatar.fromUID(this.player.db._id);
-        this.send("PlayerSyncScNotify", {
+        const inventory = await this.player.getInventory();
+
+        this.send(PlayerSyncScNotify, PlayerSyncScNotify.fromPartial({
             avatarSync: {
-                avatarList: avatars.map(x => x.data),
+                avatarList: avatars.map(x => x.data)
             },
+            materialList: inventory.getMaterialList(),
+            equipmentList: inventory.getEquipmentList(),
+            relicList: inventory.getRelicsList(),
             basicInfo: this.player.db.basicInfo
-        } as PlayerSyncScNotify);
-        
-        this.player.save();
+        }));
+
+        //this.player.save();
     }
 
-    public send(name: PacketName, body: {}) {
-        this.c.verbL(body);
-        const packet = Packet.encode(name, body);
-        if (!packet) return;
-        this.c.verbH(packet.rawData);
-        if (Logger.VERBOSE_LEVEL >= VerboseLevel.WARNS) this.c.log(packet.protoName);
-        this.kcpobj.send(packet.rawData);
+    public async send<Class extends MessageType<any>, >(type: Class, data: UnWrapMessageType<Class>) {
+        const typeName = ProtoFactory.getName(type);
+        const encodedBuffer = type.encode(type.fromPartial(data)).finish();
+        const packet = Packet.fromEncodedBuffer(Buffer.from(encodedBuffer), typeName);
+        this.c.verbL(data);
+        this.c.verbH(encodedBuffer);
+        if(!encodedBuffer) console.log("sad!")
+        if (Logger.VERBOSE_LEVEL >= VerboseLevel.WARNS) this.c.log(typeName);
+        //todo: might want to regen the ts-proto types with env = node
+        this.kcpobj.send(packet);
     }
+
+
+    public kick(hard: boolean = true) {
+        SRServer.getInstance().sessions.delete(this.id);
+        this.kicked = true;
+        if (hard) this.send(PlayerKickOutScNotify, {
+            kickType: PlayerKickOutScNotify_KickType.KICK_BLACK,
+            blackInfo: {
+                limitLevel: BlackLimitLevel.BLACK_LIMIT_LEVEL_ALL,
+                beginTime: Math.round(Date.now() / 1000),
+                endTime: Math.round(Date.now() / 1000),
+                banType: 2
+            }
+        });
+
+        SRServer.getInstance().handshake(HandshakeType.DISCONNECT, this.ctx);
+    }
+
 
     public sendRaw(data: Buffer) {
+        if (this.kicked) return;
         this.kcpobj.send(data);
     }
 }
