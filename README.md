@@ -102,11 +102,6 @@ class Handlers
 
   Step 4: After the "npm install" command has finished type "npm run start" and crepeSR should start.
 
-  Step 5: Now you should see a "config.json" file , open it with NotePad or your main text editor and change:
-"MONGO_URI": "mongodb://localhost:27017/crepesr",
-to
-"MONGO_URI": "mongodb://0.0.0.0:27017/crepesr",
-
 ###### PART 3: Starting & Playing the Game
 
  Step 1: Within the CrepeSR command prompt, create an account with the command:
@@ -124,12 +119,16 @@ In your crepeSR shell type:
 
 ```/target [UID]```
 
-```/avatar add [characterID]``` OR ```remove [characterID]```
+```/avatar add [characterID]```
+
+OR 
+
+```/avatar remove [characterID]```
 
 (If you have any issues with E11000 , open mongoDB, connect to localhost look to the left of the screen and click on "crepesr" then click on avatars. Head to the Indexes tab and delete the _id_1 index.)
 This should fix your issue and allow you to add characters to your account.
 
-## NOTE YOU NEED TO ADD CHARACTERS USING THE CONSOLE BEFORE ADDING THEM TO YOUR PARTY
+## NOTE YOU NEED TO ADD ALL OF THE CHARACTERS USING THE CONSOLE BEFORE ADDING THEM TO YOUR PARTY
 
 
 If you do not do this your mongoDB database will become corrupted so just do the 
