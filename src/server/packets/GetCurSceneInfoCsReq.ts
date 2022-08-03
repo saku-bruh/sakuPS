@@ -11,8 +11,8 @@ export default async function handle(session: Session, packet: Packet) {
     session.send("GetCurSceneInfoScRsp", {
         retcode: 0,
         scene: {
-            planeId: 10101,
-            floorId: 10101001,
+            planeId: 10102,
+            floorId: 10102001,
             entityList: [
                 curAvatarEntity
             ],
