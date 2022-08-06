@@ -17,7 +17,7 @@ const DEFAULT_CONFIG = {
 
     // Dispatch
     DISPATCH: [{
-        DISPATCH_NAME: "CrepeSR",
+        DISPATCH_NAME: "sakuPS",
         DISPATCH_URL: "http://localhost/query_gateway"
     }],
 

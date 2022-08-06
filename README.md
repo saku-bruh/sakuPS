@@ -1,3 +1,3 @@
-# CrepeSR
+# Running Honkai: Star Rail with sakuPS
 
-[Discord](https://discord.gg/KA4HqktWYG)
+Head over to the [wiki](https://github.com/saku-bruh/sakuPS/wiki) to get started.
