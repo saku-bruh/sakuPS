@@ -23,8 +23,8 @@ export default async function handle(session: Session, packet: Packet) {
     const dataObj : GetCurSceneInfoScRsp = {
         retcode: 0,
         scene: {
-            planeId: posData.planeID,
-            floorId: posData.floorID,
+            planeId: 10102,
+            floorId: 10102001,
             entityList: [
                 curAvatarEntity.getSceneEntityInfo(),
                 
